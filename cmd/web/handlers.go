@@ -2,12 +2,30 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("hello world"))
+	files := []string{
+		"./ui/html/pages/home.tmpl",
+		"./ui/html/pages/base.tmpl",
+		"./ui/html/partials/nav.tmpl",
+	}
+	tmp, err := template.ParseFiles(files...)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	err = tmp.ExecuteTemplate(w, "base", nil)
+	if err != nil {
+		log.Print("an error executing template file ", err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+
+	}
 }
 
 func oylesineHandler(w http.ResponseWriter, r *http.Request) {
